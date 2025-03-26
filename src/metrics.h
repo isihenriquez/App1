@@ -1,0 +1,1 @@
+/* Define la interfaz (prototipos) de las funciones métricas para que puedan ser usadas desde main.c.*/
