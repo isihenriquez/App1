@@ -15,8 +15,8 @@
   <dduhalde@alumnos.uai.cl>
 
 ## **Integrantes Grupo 11**
-- Claudia Sofía Meneses
-- Javier Torres
+- **Claudia Sofía Meneses**
+- **Javier Torres**
 - Benjamín Ventura
 - Isidora Henríquez
 
