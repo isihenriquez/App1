@@ -184,4 +184,279 @@ char *pls(const char *filename) {
       min_count = conteo[i].count;
     }
   }
-  
+
+  char *result = malloc(max_nombre * unicas + 50); 
+  strcpy(result, "Pizza menos vendida:\n"); 
+
+  for (int i = 0; i < unicas; i++) {
+    if (conteo[i].count == min_count) {
+      strcat(result, conteo[i].name);
+      strcat(result, "\n");
+    }
+  }
+
+  return result;
+}
+
+
+char *dms(const char *filename) {
+  FILE *file = fopen(filename, "r");
+  FechaVenta ventas_por_fecha[max_ventas];
+  int unique_dates = 0;
+
+  char line[max_linea];
+  fgets(line, sizeof(line), file);
+
+  while (fgets(line, sizeof(line), file)) {
+    trimString(line);
+    if (line[0] != '\0') {
+      char *token = strtok(line, ",");
+      int token_index = 0;
+      char *last_token = NULL;
+      float total_price = 0.0;
+
+      while (token != NULL) {
+        if (token_index == 6) {
+          total_price = atof(token);
+        } else if (token_index == 4) {
+          last_token = token;
+        }
+        token = strtok(NULL, ",");
+        token_index++;
+      }
+
+      if (last_token != NULL) {
+
+        int found = 0;
+        for (int i = 0; i < unique_dates; i++) {
+          if (strcmp(ventas_por_fecha[i].date, last_token) == 0) {
+            ventas_por_fecha[i].total_sales += total_price;
+            found = 1;
+            break;
+          }
+        }
+
+        if (!found) {
+          strncpy(ventas_por_fecha[unique_dates].date, last_token, max_fecha);
+          ventas_por_fecha[unique_dates].total_sales = total_price;
+          unique_dates++;
+        }
+      }
+    }
+  }
+
+  fclose(file);
+
+  float max_venta = -1.0;
+  char max_venta_fecha[max_fecha];
+  for (int i = 0; i < unique_dates; i++) {
+    if (ventas_por_fecha[i].total_sales > max_venta) {
+      max_venta = ventas_por_fecha[i].total_sales;
+      strncpy(max_venta_fecha, ventas_por_fecha[i].date, max_fecha);
+    }
+  }
+  char *result = malloc(max_linea * sizeof(char));
+  snprintf(result, max_linea,
+           "Fecha con más ventas en términos de dinero: %s (con %.2f)",
+           max_venta_fecha, max_venta);
+
+  return result;
+}
+
+char *dls(const char *filename) {
+  FILE *file = fopen(filename, "r");
+  FechaVenta ventas_por_fecha[max_ventas];
+  int unique_dates = 0;
+  char line[max_linea];
+  fgets(line, sizeof(line), file);
+
+  while (fgets(line, sizeof(line), file)) {
+    trimString(line);
+    if (line[0] != '\0') {
+      char *token = strtok(line, ",");
+      int token_index = 0;
+      char *last_token = NULL;
+      float total_price = 0.0;
+
+      while (token != NULL) {
+        if (token_index == 6) {
+          total_price = atof(token);
+        } else if (token_index == 4) {
+          last_token = token;
+        }
+        token = strtok(NULL, ",");
+        token_index++;
+      }
+
+      if (last_token != NULL) {
+        int found = 0;
+        for (int i = 0; i < unique_dates; i++) {
+          if (strcmp(ventas_por_fecha[i].date, last_token) == 0) {
+            ventas_por_fecha[i].total_sales += total_price;
+            found = 1;
+            break;
+          }
+        }
+
+        if (!found) {
+          strncpy(ventas_por_fecha[unique_dates].date, last_token, max_fecha);
+          ventas_por_fecha[unique_dates].total_sales = total_price;
+          unique_dates++;
+        }
+      }
+    }
+  }
+
+  fclose(file);
+
+  float min_ventas = FLT_MAX;
+  char min_ventas_fecha[max_fecha];
+  for (int i = 0; i < unique_dates; i++) {
+    if (ventas_por_fecha[i].total_sales < min_ventas) {
+      min_ventas = ventas_por_fecha[i].total_sales;
+      strncpy(min_ventas_fecha, ventas_por_fecha[i].date, max_fecha);
+    }
+  }
+
+  char *result = malloc(max_linea * sizeof(char));
+
+  snprintf(result, max_linea,
+           "Fecha con menos ventas en términos de dinero: %s (con %.2f)",
+           min_ventas_fecha, min_ventas);
+
+  return result;
+}
+
+char *dmsp(const char *filename) {
+  FILE *file = fopen(filename, "r");
+  FechaVenta ventas_por_fecha[max_ventas];
+  int fechasuni = 0;
+  char line[max_linea];
+  fgets(line, sizeof(line), file);
+
+  while (fgets(line, sizeof(line), file)) {
+    trimString(line);
+    if (line[0] != '\0') {
+      char *token = strtok(line, ",");
+      int token_index = 0;
+      char *last_token = NULL;
+      int quantity = 0;
+
+      while (token != NULL) {
+        if (token_index == 3) {
+          quantity = atoi(token);
+        } else if (token_index == 4) {
+          last_token = token;
+        }
+        token = strtok(NULL, ",");
+        token_index++;
+      }
+
+      if (last_token != NULL) {
+
+        int found = 0;
+        for (int i = 0; i < fechasuni; i++) {
+          if (strcmp(ventas_por_fecha[i].date, last_token) == 0) {
+            ventas_por_fecha[i].total_sales += quantity;
+            found = 1;
+            break;
+          }
+        }
+
+        if (!found) {
+          strncpy(ventas_por_fecha[fechasuni].date, last_token, max_fecha);
+          ventas_por_fecha[fechasuni].total_sales = quantity;
+          fechasuni++;
+        }
+      }
+    }
+  }
+
+  fclose(file);
+
+  int max_sales = -1;
+  char max_sales_date[max_fecha];
+  for (int i = 0; i < fechasuni; i++) {
+    if (ventas_por_fecha[i].total_sales > max_sales) {
+      max_sales = ventas_por_fecha[i].total_sales;
+      strncpy(max_sales_date, ventas_por_fecha[i].date, max_fecha);
+    }
+  }
+
+  char *result = malloc(max_linea * sizeof(char));
+  snprintf(result, max_linea,
+           "Fecha con mas ventas en terminos de cantidad: %s con %d",
+           max_sales_date, max_sales);
+
+  return result;
+}
+
+char *dlsp(const char *filename) {
+  FILE *file = fopen(filename, "r");
+
+  FechaVenta ventas_por_fecha[max_ventas];
+  int unique_dates = 0;
+
+  char line[max_linea];
+  fgets(line, sizeof(line), file);
+
+  while (fgets(line, sizeof(line), file)) {
+    trimString(line);
+    if (line[0] != '\0') {
+      char *token = strtok(line, ",");
+      int token_index = 0;
+      char *last_token = NULL;
+      int quantity = 0;
+
+      while (token != NULL) {
+        if (token_index == 3) {
+          quantity = atoi(token);
+        } else if (token_index == 4) {
+          last_token = token;
+        }
+        token = strtok(NULL, ",");
+        token_index++;
+      }
+
+      if (last_token != NULL) {
+        int found = 0;
+        for (int i = 0; i < unique_dates; i++) {
+          if (strcmp(ventas_por_fecha[i].date, last_token) == 0) {
+            ventas_por_fecha[i].total_sales += quantity;
+            found = 1;
+            break;
+          }
+        }
+
+        if (!found) {
+          strncpy(ventas_por_fecha[unique_dates].date, last_token, max_fecha);
+          ventas_por_fecha[unique_dates].total_sales = quantity;
+          unique_dates++;
+        }
+      }
+    }
+  }
+
+  fclose(file);
+
+  float min_sales = FLT_MAX;
+  char min_sales_date[max_fecha];
+  for (int i = 0; i < unique_dates; i++) {
+    if (ventas_por_fecha[i].total_sales < min_sales) {
+      min_sales = ventas_por_fecha[i].total_sales;
+      strncpy(min_sales_date, ventas_por_fecha[i].date, max_fecha);
+    }
+  }
+  char *result = malloc(max_linea * sizeof(char));
+  snprintf(result, max_linea,
+           "Fecha con menos ventas en términos de cantidad: %s con %.2f",
+           min_sales_date, min_sales);
+
+  return result;
+}
+
+char *apo(const char *filename) {
+  FILE *file = fopen(filename, "r");
+
+  int total_orden = 0;
+  int total_pizzas = 0;
