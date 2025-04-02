@@ -460,3 +460,283 @@ char *apo(const char *filename) {
 
   int total_orden = 0;
   int total_pizzas = 0;
+
+  char line[max_linea];
+  fgets(line, sizeof(line), file);
+
+  while (fgets(line, sizeof(line), file)) {
+    trimString(line);
+    if (line[0] != '\0') {
+      char *token = strtok(line, ",");
+      int token_index = 0;
+      int quantity = 0;
+
+      while (token != NULL) {
+        if (token_index == 3) {
+          quantity = atoi(token);
+        }
+        token = strtok(NULL, ",");
+        token_index++;
+      }
+
+      total_pizzas += quantity;
+      total_orden++;
+    }
+  }
+
+  fclose(file);
+
+  float prom_pizza = (float)total_pizzas / total_orden;
+  char *result = malloc(max_linea * sizeof(char));
+  snprintf(result, max_linea, "Promedio de pizzas por orden: %.2f", prom_pizza);
+
+  return result;
+}
+
+char *apd(const char *filename) {
+  FILE *file = fopen(filename, "r");
+
+  FechaVenta ventas_por_fecha[max_ventas];
+  int unique_dates = 0;
+
+  char line[max_linea];
+  fgets(line, sizeof(line), file);
+
+  while (fgets(line, sizeof(line), file)) {
+    trimString(line);
+    if (line[0] != '\0') {
+      char *token = strtok(line, ",");
+      int token_index = 0;
+      char *last_token = NULL;
+      int quantity = 0;
+      char *date_token = NULL;
+
+      while (token != NULL) {
+        if (token_index == 3) {
+          quantity = atoi(token);
+        }
+        if (token_index == 4) {
+          date_token = token;
+        }
+        token = strtok(NULL, ",");
+        token_index++;
+      }
+
+      if (date_token != NULL) {
+        int found = 0;
+        for (int i = 0; i < unique_dates; i++) {
+          if (strcmp(ventas_por_fecha[i].date, date_token) == 0) {
+            ventas_por_fecha[i].total_sales += quantity;
+            found = 1;
+            break;
+          }
+        }
+
+        if (!found) {
+          strncpy(ventas_por_fecha[unique_dates].date, date_token, max_fecha);
+          ventas_por_fecha[unique_dates].total_sales = quantity;
+          unique_dates++;
+        }
+      }
+    }
+  }
+
+  fclose(file);
+  int total_pizzas = 0;
+  for (int i = 0; i < unique_dates; i++) {
+    total_pizzas += ventas_por_fecha[i].total_sales;
+  }
+
+  float total_dias = unique_dates;
+  float prom_dia = 0;
+
+  if (total_dias > 0) {
+    prom_dia = (float)total_pizzas / total_dias;
+  }
+
+  char *result = malloc(max_linea * sizeof(char));
+  snprintf(result, max_linea, "Promedio de pizzas por día: %.2f", prom_dia);
+
+  return result;
+}
+
+
+char *ims(const char *filename) {
+  FILE *file = fopen(filename, "r");
+
+  typedef struct {
+    char ingredient[max_nombre];
+    int count;
+  } Ingrediente;
+
+  Ingrediente ingredientes[max_cant];
+  int num_ingr = 0;
+  char line[max_linea];
+  fgets(line, sizeof(line), file);
+
+  while (fgets(line, sizeof(line), file)) {
+    trimString(line);
+    if (line[0] != '\0') {
+      char *token = strtok(line, ",");
+      int token_index = 0;
+      char *last_token = NULL;
+
+      while (token != NULL) {
+        if (token_index == 11) {
+          char s_ingre[max_linea];
+          strncpy(s_ingre, token, max_linea);
+          char *ingre_token = strtok(s_ingre, ",");
+          while (ingre_token != NULL) {
+            if (ingre_token[0] == '"' &&
+                ingre_token[strlen(ingre_token) - 1] == '"') {
+              memmove(ingre_token, ingre_token + 1, strlen(ingre_token) - 2);
+              ingre_token[strlen(ingre_token) - 2] = '\0';
+            }
+            for (int i = 0; ingre_token[i]; i++) {
+              ingre_token[i] = tolower(ingre_token[i]);
+            }
+            int found = 0;
+            for (int i = 0; i < num_ingr; i++) {
+              if (strcmp(ingredientes[i].ingredient, ingre_token) == 0) {
+                ingredientes[i].count++;
+                found = 1;
+                break;
+              }
+            }
+            if (!found) {
+              strncpy(ingredientes[num_ingr].ingredient, ingre_token,
+                      max_nombre);
+              ingredientes[num_ingr].count = 1;
+              num_ingr++;
+            }
+            ingre_token = strtok(NULL, ",");
+          }
+        }
+        token = strtok(NULL, ",");
+        token_index++;
+      }
+    }
+  }
+
+  fclose(file);
+  char ingre_mas_v[max_nombre];
+  int max_count = -1;
+  for (int i = 0; i < num_ingr; i++) {
+    if (ingredientes[i].count > max_count) {
+      max_count = ingredientes[i].count;
+      strncpy(ingre_mas_v, ingredientes[i].ingredient, max_nombre);
+    }
+  }
+  char *result = malloc(max_linea * sizeof(char));
+  snprintf(result, max_linea,
+           "Ingrediente más vendido: %s - Cantidad vendida: %d", ingre_mas_v,
+           max_count);
+
+  return result;
+}
+
+char *hp(const char *filename) {
+  FILE *file = fopen(filename, "r");
+
+  typedef struct {
+    char category[max_nombre];
+    int count;
+  } CategoriaPizza;
+
+  CategoriaPizza categorias[max_cant];
+  int num_categorias = 0;
+
+  char line[max_linea];
+  fgets(line, sizeof(line), file);
+
+  while (fgets(line, sizeof(line), file)) {
+    trimString(line);
+    if (line[0] != '\0') {
+      char *token = strtok(line, ",");
+      int token_index = 0;
+      char *last_token = NULL;
+      char category[max_nombre];
+
+      while (token != NULL) {
+        if (token_index == 9) {
+          strncpy(category, token, max_nombre);
+        }
+        last_token = token;
+        token = strtok(NULL, ",");
+        token_index++;
+      }
+
+      int found = 0;
+      for (int i = 0; i < num_categorias; i++) {
+        if (strcmp(categorias[i].category, category) == 0) {
+          categorias[i].count++;
+          found = 1;
+          break;
+        }
+      }
+
+      if (!found) {
+        strncpy(categorias[num_categorias].category, category, max_nombre);
+        categorias[num_categorias].count = 1;
+        num_categorias++;
+      }
+    }
+  }
+
+  fclose(file);
+
+  char *result = malloc(max_linea * num_categorias * sizeof(char));
+  result[0] = '\0';
+  for (int i = 0; i < num_categorias; i++) {
+    char temp[max_linea];
+    snprintf(temp, sizeof(temp),
+             "Categoría: %s - Cantidad de pizzas vendidas: %d\n",
+             categorias[i].category, categorias[i].count);
+    strcat(result, temp);
+  }
+
+  return result;
+}
+
+int main(int argc, char *argv[]) {
+  if (argc < 3) {
+    fprintf(stderr, "Uso: %s <archivo.csv> <métrica1> [<métrica2> ...]\n",
+            argv[0]);
+    return 1;
+  }
+
+  char *archivo = argv[1];
+
+  for (int i = 2; i < argc; i++) {
+    char *metrica = argv[i];
+    char *resultado = NULL;
+
+    if (strcmp(metrica, "pms") == 0) {
+      resultado = pms(archivo);
+    } else if (strcmp(metrica, "pls") == 0) {
+      resultado = pls(archivo);
+    } else if (strcmp(metrica, "dms") == 0) {
+      resultado = dms(archivo);
+    } else if (strcmp(metrica, "dls") == 0) {
+      resultado = dls(archivo);
+    } else if (strcmp(metrica, "dmsp") == 0) {
+      resultado = dmsp(archivo);
+    } else if (strcmp(metrica, "dlsp") == 0) {
+      resultado = dlsp(archivo);
+    } else if (strcmp(metrica, "apo") == 0) {
+      resultado = apo(archivo);
+    } else if (strcmp(metrica, "apd") == 0) {
+      resultado = apd(archivo);
+    } else if (strcmp(metrica, "ims") == 0) {
+      resultado = ims(archivo);
+    } else if (strcmp(metrica, "hp") == 0) {
+      resultado = hp(archivo);
+    }
+    if (resultado != NULL) {
+      printf("%s\n", resultado);
+      free(resultado);
+    }
+  }
+
+  return 0;
+}
