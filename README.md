@@ -15,8 +15,10 @@
   <dduhalde@alumnos.uai.cl>
 
 ## **Integrantes Grupo 11**
-- **Claudia Sofía Meneses**
-- **Javier Torres**
+- **Claudia Sofía Meneses** <br>
+<claumeneses@alumnos.uai.cl>
+- **Javier Torres** <br>
+<Javieritorres@alumnos.uai.cl>
 - **Benjamín Ventura**
 - **Isidora Henríquez**
 
