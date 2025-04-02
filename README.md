@@ -19,10 +19,18 @@
 <claumeneses@alumnos.uai.cl>
 - **Javier Torres** <br>
 <Javieritorres@alumnos.uai.cl>
-- **Benjamín Ventura**
-- **Isidora Henríquez**
+- **Benjamín Ventura** <br>
+<bventura@alumnos.uai.cl>
+- **Isidora Henríquez** <br>
+<isihenriquez@alumnos.uai.cl>
 
 # **Tarea 1: Pizzería en C**
+## Compilación y ejecución
+La aplicación se compila con el siguiente comando:
+`gcc src/main.c -o app1 -Wall -Wextra -std=c99`
+También se puede compilar ejecutando `make`.
+Para correr la aplicación:
+`./app1 ventas.csv pms pls dms`
 
 ## 1. Objetivos
 
