@@ -17,6 +17,8 @@
 ## **Integrantes Grupo 11**
 - Claudia Sofía Meneses
 - Javier Torres
+- Benjamín Ventura
+- Isidora Henríquez
 
 # **Tarea 1: Pizzería en C**
 
